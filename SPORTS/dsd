@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Performers in Sports Events</title>
+    <style>
+        /* Your existing CSS styles */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Top Performers in Sports Events</h2>
+        <!-- Existing form for uploading data -->
+        <div class="form-group">
+            <label for="photo">Upload Photo:</label>
+            <input type="file" id="photo" class="upload-input">
+            <img id="preview" class="preview-image" src="#" alt="Preview">
+        </div>
+        <div class="form-group">
+            <label for="sport">Sports Name:</label>
+            <input type="text" id="sport" class="form-control" placeholder="Enter sports name">
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" class="form-control" rows="4" placeholder="Enter description"></textarea>
+        </div>
+        <button type="button" onclick="saveData()" class="btn btn-primary">Save</button>
+
+        <!-- New section to display achievements -->
+        <h3>Top Performers</h3>
+        <ul id="topPerformersList"></ul>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var preview = document.getElementById('preview');
+                preview.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function saveData() {
+            var sportName = document.getElementById('sport').value;
+            var description = document.getElementById('description').value;
+            var previewImageSrc = document.getElementById('preview').src;
+
+            // Normally, you would send this data to server using AJAX fetch or XMLHttpRequest
+
+            // For demonstration purpose, add the data to achievements list (client-side)
+            var listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <div>
+                    <h4>${sportName}</h4>
+                    <p>${description}</p>
+                    <img src="${previewImageSrc}" alt="Preview">
+                </div>
+            `;
+            document.getElementById('topPerformersList').appendChild(listItem);
+
+            // Clear input fields and preview after saving
+            document.getElementById('sport').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('preview').src = '#';
+
+            alert('Data saved successfully!');
+        }
+
+        // Function to fetch achievements from achievements.php
+        function fetchAchievements() {
+            fetch('achievements.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Iterate through achievements and display them
+                    data.forEach(achievement => {
+                        var listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <div>
+                                <h4>${achievement.sport}</h4>
+                                <p>${achievement.description}</p>
+                                <img src="${achievement.image}" alt="${achievement.sport} Image">
+                            </div>
+                        `;
+                        document.getElementById('topPerformersList').appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching achievements:', error));
+        }
+
+        // Call fetchAchievements function when the page loads
+        document.addEventListener('DOMContentLoaded', fetchAchievements);
+
+        // Attach previewImage function to file input change event
+        document.getElementById('photo').addEventListener('change', previewImage);
+    </script>
+</body>
+</html>
